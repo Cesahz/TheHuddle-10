@@ -29,3 +29,7 @@ class Config:
     
     #samesite protege contra ataques csrf al no enviar cookies en peticiones cruzadas
     SESSION_COOKIE_SAMESITE = 'Strict'
+    
+    #limites de la contra
+    PASSWORD_MIN_LENGTH = 8
+    PASSWORD_MAX_LENGTH = 128
