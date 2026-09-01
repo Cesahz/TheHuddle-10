@@ -19,3 +19,13 @@ class Config:
     SESSION_TYPE = 'filesystem'
     SESSION_FILE_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'flask_sessions')
     SESSION_PERMANENT = False
+    
+    #========seguridad estricta para cookies
+    #httponly evita que javascript del lado del cliente lea la cookie ==? mitiga xss
+    SESSION_COOKIE_HTTPONLY = True
+    
+    #secure obliga a que la cookie solo se envie por https
+    SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE') == 'True'
+    
+    #samesite protege contra ataques csrf al no enviar cookies en peticiones cruzadas
+    SESSION_COOKIE_SAMESITE = 'Strict'
