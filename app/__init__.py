@@ -32,4 +32,16 @@ def create_app(config_class=Config):
             db.session.add_all([rol_usuario, rol_admin]) #session es como el cursor
             db.session.commit()
 
+    #ruta de prueba
+    @app.route('/ping')
+    def ping():
+        return {"mensaje": "servidor passport inc activo"}
+    
+    #registro de blueprints
+    from .controller.auth import auth_bp
+    from .controller.protected import protected_bp
+    
+    app.register_blueprint(auth_bp) #monta todas las rutas de auth_bp en /auth/
+    app.register_blueprint(protected_bp) #lo mismo pero con protected_bp en /api
+
     return app
