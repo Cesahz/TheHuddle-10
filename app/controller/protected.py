@@ -15,3 +15,14 @@ def perfil():
         "rol": identity['role'],
         "datos": "aqui estaran tus pasaportes e identificaciones digitales"
     }), 200
+
+@protected_bp.route('/admin/dashboard', methods=['GET'])
+@admin_required
+def admin_dashboard():
+    identity = get_user_identity()
+    total_usuarios = User.query.count()
+    return jsonify({
+        "mensaje": "panel de administracion",
+        "admin_id": identity['user_id'],
+        "total_usuarios_registrados": total_usuarios
+    }), 200
