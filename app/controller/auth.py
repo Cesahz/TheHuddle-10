@@ -100,3 +100,9 @@ def login_cookie():
         
     #respuesta generica para no dar pistas a los atacantes
     return jsonify({"error": "credenciales invalidas"}), 401
+
+#logout con cookie
+@auth_bp.route('/logout/cookie', methods=['POST'])
+def logout_cookie():
+    session.clear() #accede a la cookie y borrar tanto la session como la cookie dle nav
+    return jsonify({"mensaje": "sesion cerrada correctamente"}), 200
