@@ -14,3 +14,8 @@ class Config:
 
     #desactivar el rastreo de modificaciones para ahorrar memoria
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    
+    #session store dentro del server
+    SESSION_TYPE = 'filesystem'
+    SESSION_FILE_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'flask_sessions')
+    SESSION_PERMANENT = False
