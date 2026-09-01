@@ -143,3 +143,27 @@ def login_jwt():
         }), 200
         
     return jsonify({"error": "credenciales invalidas"}), 401
+
+
+@auth_bp.route('/csrf-token', methods=['GET'])
+def get_csrf_token():
+    #generar y devolver un token csrf valido para la sesion actual
+    token = generate_csrf()
+    return jsonify({"csrf_token": token}), 200      #ESTE CREA TAMBIEN LA SESSION
+
+
+#funcion auxiliar para hacerme admin nejee
+# @auth_bp.route('/register/admin', methods=['POST'])
+# def register_admin():
+#     data = request.get_json()
+#     email    = data.get('email', '').strip().lower()
+#     password = data.get('password', '')
+
+#     admin_role = Role.query.filter_by(name='administrador').first()
+#     hashed     = bcrypt.generate_password_hash(password).decode('utf-8')
+    
+#     new_admin  = User(email=email, password_hash=hashed, role_id=admin_role.id)
+#     db.session.add(new_admin)
+#     db.session.commit()
+    
+#     return jsonify({"mensaje": "administrador creado"}), 201
