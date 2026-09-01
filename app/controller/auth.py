@@ -106,3 +106,40 @@ def login_cookie():
 def logout_cookie():
     session.clear() #accede a la cookie y borrar tanto la session como la cookie dle nav
     return jsonify({"mensaje": "sesion cerrada correctamente"}), 200
+
+
+#login con jwt
+@auth_bp.route('/login/jwt', methods=['POST'])
+@limiter.limit("5 per minute")
+def login_jwt():
+    data = request.get_json()
+    
+    if not data:
+        return jsonify({"error": "datos no proporcionados"}), 400
+        
+    email    = data.get('email', '').strip().lower()
+    password = data.get('password', '')
+    
+    user = User.query.filter_by(email=email).first()
+    
+    if user and bcrypt.check_password_hash(user.password_hash, password):
+        now = datetime.datetime.now(datetime.timezone.utc)
+        #construir el payload con los datos utiles y un tiempo de vida
+        payload = {
+            'user_id': user.id,
+            'role': user.role.name,
+            'exp': now + datetime.timedelta(hours=1),
+            'iat': now,
+        }
+        
+        #firmar el token usando el algoritmo hs256 y la clave del .env
+        token = jwt.encode(payload, current_app.config['SECRET_KEY'], algorithm='HS256')
+        
+        return jsonify({
+            "mensaje": "inicio de sesion exitoso",
+            "metodo": "jwt",
+            #entregar el token al cliente para que guarde y use en futuras peticiones
+            "token": token
+        }), 200
+        
+    return jsonify({"error": "credenciales invalidas"}), 401
