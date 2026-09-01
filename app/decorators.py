@@ -20,3 +20,35 @@ def get_user_identity():
         return {"user_id": session.get('user_id'), "role": session.get('role')}
         
     return None
+
+
+def login_required(f):
+    #decorador para rutas que exigen que el usuario este logueado
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        identity = get_user_identity()
+        
+        if not identity:
+            return jsonify({"error": "autenticacion requerida. inicie sesion o provea un token"}), 401
+            
+        if "error" in identity:
+            return jsonify({"error": identity["error"]}), 401
+            
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def admin_required(f):
+    #decorador para rutas exclusivas del rol administrador
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        identity = get_user_identity()
+        
+        if not identity or "error" in identity:
+            return jsonify({"error": "autenticacion requerida"}), 401
+            
+        if identity.get("role") != "administrador":
+            return jsonify({"error": "acceso denegado. requiere rol de administrador"}), 403
+            
+        return f(*args, **kwargs)
+    return decorated_function
