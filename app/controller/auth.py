@@ -67,3 +67,36 @@ def register():
     db.session.commit()
     
     return jsonify({"mensaje": "usuario creado con exito"}), 201
+
+
+@auth_bp.route('/login/cookie', methods=['POST'])
+@limiter.limit("5 per minute")
+def login_cookie():
+    data = request.get_json()
+    
+    if not data:
+        return jsonify({"error": "datos no proporcionados"}), 400
+        
+    email    = data.get('email', '').strip().lower()
+    password = data.get('password', '')
+    
+    #buscar al usuario en la base de datos
+    user = User.query.filter_by(email=email).first()
+    
+    #validar que el usuario exista y que la contrasena coincida con el hash
+    if user and bcrypt.check_password_hash(user.password_hash, password):
+        #limpiar cualquier sesion previa por seguridad
+        session.clear()
+        
+        #inyectar los datos en la sesion de flask
+        session['user_id'] = user.id            #ACA SE GUARDA LA COOKIEAEEE
+        session['role']    = user.role.name     #ACA SE GUARDA LA COOKIEAEEE
+        
+        return jsonify({
+            "mensaje": "inicio de sesion exitoso",
+            "metodo": "cookie",
+            "rol": user.role.name
+        }), 200
+        
+    #respuesta generica para no dar pistas a los atacantes
+    return jsonify({"error": "credenciales invalidas"}), 401
